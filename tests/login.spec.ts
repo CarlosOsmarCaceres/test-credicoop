@@ -10,6 +10,12 @@ test.describe('Suite de Login - Banco Credicoop', () => {
     await loginPage.goto();
   });
 
+  test.afterEach(async ({ page }) => {
+    // Pausa de 3 segundos (3000 milisegundos) al finalizar cada prueba.
+    // Esto es ideal para la demo visual en la entrevista.
+    await page.waitForTimeout(3000);
+  });
+
   test('TC01: Validar carga de elementos críticos', async () => {
     // Verificamos que todos los controles esenciales del formulario estén presentes
     // y visibles antes de intentar interactuar. Esto detecta fallos de carga o
@@ -41,14 +47,17 @@ test.describe('Suite de Login - Banco Credicoop', () => {
     expect(await loginPage.getLocatorNumeroDocumento().inputValue()).toHaveLength(MAX_LENGTH_DOCUMENTO);
   });
 
-  test('TC04: Intento de login vacío (Validación Frontend)', async ({ page }) => {
-    // Sin completar datos, el clic en Ingresar no debería redirigir a otra página.
-    // La validación frontend o del banco debe mantener al usuario en login.
-    const urlAntes = page.url();
-    await loginPage.clickIngresar();
-    const urlDespues = page.url();
-    expect(urlDespues).toBe(urlAntes);
-  });
+  test('TC04: Intento de login vacío (Comportamiento del servidor)', async ({ page }) => {
+      // Al hacer clic en Ingresar sin datos, el banco procesa la petición en el backend
+      // y recarga la página en la ruta 'userLogin.do' adjuntando un jsessionid.
+      await loginPage.clickIngresar();
+      
+      // Esperamos un momento para que el banco haga la redirección
+      await page.waitForTimeout(2000); 
+      
+      // Validamos que la URL ahora contenga la ruta de login procesado
+      expect(page.url()).toContain('userLogin.do');
+    });
 
   test('TC05: Intento de login inválido (Happy path negativo)', async ({ page }) => {
     // Simulamos credenciales falsas: el sistema debe rechazar el acceso y
