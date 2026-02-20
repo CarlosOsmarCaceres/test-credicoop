@@ -62,6 +62,16 @@ export class LoginPage extends BasePage {
     await this.clickIngresar();
   }
 
+  /** Devuelve el Locator del campo adherente. */
+  getLocatorAdherente(): Locator {
+    return this.page.locator(this.selectors.adherente);
+  }
+
+  /** Devuelve el Locator del combo tipo de documento. */
+  getLocatorTipoDocumento(): Locator {
+    return this.page.locator(this.selectors.tipoDocumento);
+  }
+
   /** Devuelve el Locator del campo número de documento (para asserts o acciones extra). */
   getLocatorNumeroDocumento(): Locator {
     return this.page.locator(this.selectors.numeroDocumento);
