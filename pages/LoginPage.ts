@@ -11,11 +11,12 @@ import { BasePage } from './BasePage';
 export class LoginPage extends BasePage {
   /** Selectores provisionales; centralizados para facilitar cambios de UI. */
   private readonly selectors = {
-    tipoDocumento: '#tipoDoc',
-    numeroDocumento: '#nroDoc',
-    clave: '#clave',
-    botonIngresar: 'button[type="submit"]',
-    mensajeError: '.mensaje-error',
+    adherente: 'input[name="adherentText"]',
+    tipoDocumento: 'select[name="docType"]',
+    numeroDocumento: '[data-bc="nroDoc"]',
+    clave: '#passwordText',
+    botonIngresar: 'input[type="submit"][value="Ingresar"]',
+    mensajeError: '.mensaje-error' // Lo dejaremos genérico hasta forzar un error
   };
 
   constructor(page: Page) {
@@ -25,6 +26,11 @@ export class LoginPage extends BasePage {
   /** Navega a la página de login (baseURL). */
   async goto(): Promise<void> {
     await this.navigate();
+  }
+
+  /** Ingresa el adherente en el campo correspondiente. */
+  async ingresarAdherente(adherente: string): Promise<void> {
+    await this.page.fill(this.selectors.adherente, adherente);
   }
 
   /** Selecciona el tipo de documento en el combo. */
@@ -47,8 +53,9 @@ export class LoginPage extends BasePage {
     await this.page.locator(this.selectors.botonIngresar).click();
   }
 
-  /** Realiza el flujo completo de login: tipo, documento, clave y enviar. */
-  async login(tipo: string, numero: string, clave: string): Promise<void> {
+  /** Realiza el flujo completo de login: adherente, tipo, documento, clave y enviar. */
+  async login(adherente: string, tipo: string, numero: string, clave: string): Promise<void> {
+    await this.ingresarAdherente(adherente);
     await this.seleccionarTipoDocumento(tipo);
     await this.ingresarNumeroDocumento(numero);
     await this.ingresarClave(clave);

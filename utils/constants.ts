@@ -17,4 +17,4 @@ export const TIPOS_DOCUMENTO = ['DNI', 'LE', 'LC', 'CI', 'Pasaporte'] as const;
 export const MAX_LENGTH_DOCUMENTO = 11;
 
 /** Longitud máxima permitida para la clave de acceso. */
-export const MAX_LENGTH_CLAVE = 20;
+export const MAX_LENGTH_CLAVE = 8;
