@@ -1,0 +1,28 @@
+{
+  "name": "test-credicoop",
+  "version": "1.0.0",
+  "description": "QA Automation project with Playwright",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report playwright-report",
+    "allure:generate": "allure generate allure-results -o allure-report --clean",
+    "allure:open": "allure open allure-report"
+  },
+  "keywords": [
+    "playwright",
+    "qa",
+    "automation",
+    "e2e"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "allure-commandline": "^2.36.0",
+    "allure-playwright": "^3.4.5",
+    "typescript": "^5.9.3"
+  }
+}
