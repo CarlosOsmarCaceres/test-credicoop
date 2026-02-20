@@ -30,16 +30,15 @@ test.describe('Suite de Login - Banco Credicoop', () => {
   test('TC03: Validar longitudes máximas', async () => {
     // Comprobamos que los límites maxlength del HTML se respetan: el formulario
     // no debe aceptar más caracteres de los permitidos por negocio.
-    const textoLargoClave = 'a'.repeat(20);
-    const textoLargoDocumento = '1'.repeat(15);
+    // Usamos las constantes + 5 para asegurar que intentamos escribir de más.
+    const textoLargoClave = 'a'.repeat(MAX_LENGTH_CLAVE + 5);
+    const textoLargoDocumento = '1'.repeat(MAX_LENGTH_DOCUMENTO + 5);
 
     await loginPage.getLocatorClave().fill(textoLargoClave);
     expect(await loginPage.getLocatorClave().inputValue()).toHaveLength(MAX_LENGTH_CLAVE);
 
     await loginPage.getLocatorNumeroDocumento().fill(textoLargoDocumento);
-    expect(await loginPage.getLocatorNumeroDocumento().inputValue()).toHaveLength(
-      MAX_LENGTH_DOCUMENTO
-    );
+    expect(await loginPage.getLocatorNumeroDocumento().inputValue()).toHaveLength(MAX_LENGTH_DOCUMENTO);
   });
 
   test('TC04: Intento de login vacío (Validación Frontend)', async ({ page }) => {
