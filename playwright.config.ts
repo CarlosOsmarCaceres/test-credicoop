@@ -12,6 +12,7 @@ export default defineConfig({
     ['list']
   ],
   use: {
+    headless: false,
     baseURL: 'https://bancainternet.bancocredicoop.coop/bcclbe/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',

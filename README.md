@@ -70,3 +70,6 @@ import { MAX_LENGTH_CLAVE } from '@utils/constants';
 
 Este README está pensado para entrevistas y handover rápido del proyecto de QA Automation.
 
+### Atajos de teclado
+
+ctrl + f: Para bus car en inpector por xpath, id
