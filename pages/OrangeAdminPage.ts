@@ -2,6 +2,17 @@ import { Page, Locator } from '@playwright/test';
 import { TIMEOUTS } from '../utils/constants';
 
 /**
+ * Opciones para registrar un usuario nuevo en OrangeHRM.
+ */
+export interface AddUserOptions {
+  userRole: 'Admin' | 'ESS';
+  employeeName: string;
+  username: string;
+  status: 'Enabled' | 'Disabled';
+  password: string;
+}
+
+/**
  * Page Object para el módulo Admin de OrangeHRM.
  *
  * Agrupa las operaciones de:
@@ -9,6 +20,7 @@ import { TIMEOUTS } from '../utils/constants';
  * - Filtro por Status en la tabla de usuarios.
  * - Edición del estado de un registro.
  * - Eliminación del segundo registro.
+ * - Registro de usuario nuevo.
  * - Acceso a los mensajes Toast de éxito.
  */
 export class OrangeAdminPage {
@@ -50,6 +62,10 @@ export class OrangeAdminPage {
 
   private get secondRow(): Locator {
     return this.page.locator('.oxd-table-card').nth(1);
+  }
+
+  private get addButton(): Locator {
+    return this.page.getByRole('button', { name: 'Add' });
   }
 
   // --- Acciones de navegación ---
@@ -98,6 +114,64 @@ export class OrangeAdminPage {
     await this.setStatusInForm(status);
     await this.page.waitForTimeout(1000);
     await this.page.getByRole('button', { name: 'Save' }).click();
+  }
+
+  // --- Registro de usuario nuevo ---
+
+  /** Locator del contenedor del formulario "Add User" para evitar colisiones con la tabla/filtros. */
+  private get addUserForm(): Locator {
+    return this.page
+      .locator('.orangehrm-card-container')
+      .filter({ has: this.page.getByRole('heading', { name: 'Add User' }) });
+  }
+
+  /**
+   * Abre el formulario "Add User" y completa el registro con los datos indicados.
+   * Usa esperas dinámicas y selectores acotados al formulario para evitar Strict mode violation.
+   */
+  async addNewUser(options: AddUserOptions): Promise<void> {
+    await this.addButton.click();
+    await this.addUserForm.waitFor({ state: 'visible', timeout: TIMEOUTS.LONG });
+
+    // 1. User Role (scope al formulario + regex exacto)
+    await this.addUserForm
+      .locator('div.oxd-input-group')
+      .filter({ hasText: /^\s*User Role\s*$/ })
+      .locator('.oxd-select-text')
+      .click();
+    await this.page.getByRole('option', { name: options.userRole }).click();
+
+    // 2. Employee Name: pressSequentially + espera al dropdown de sugerencias (.oxd-autocomplete-dropdown-option)
+    const employeeInput = this.addUserForm.getByPlaceholder('Type for hints...');
+    await employeeInput.click();
+    await employeeInput.pressSequentially(options.employeeName, { delay: 80 });
+
+    const autocompleteOption = this.page.locator('.oxd-autocomplete-dropdown-option').first();
+    await autocompleteOption.waitFor({ state: 'visible', timeout: TIMEOUTS.LONG });
+    await autocompleteOption.click();
+
+    // 3. Status (scope al formulario + regex exacto)
+    await this.addUserForm
+      .locator('div.oxd-input-group')
+      .filter({ hasText: /^\s*Status\s*$/ })
+      .locator('.oxd-select-text')
+      .click();
+    await this.page.getByRole('option', { name: options.status }).click();
+
+    // 4. Username (scope al formulario + regex exacto)
+    const usernameInput = this.addUserForm
+      .locator('div.oxd-input-group')
+      .filter({ hasText: /^\s*Username\s*$/ })
+      .locator('input');
+    await usernameInput.fill(options.username);
+
+    // 5. Password (inputs dentro del formulario)
+    const passwordInputs = this.addUserForm.locator('input[type="password"]');
+    await passwordInputs.nth(0).fill(options.password);
+    await passwordInputs.nth(1).fill(options.password);
+
+    // 6. Guardar
+    await this.addUserForm.getByRole('button', { name: 'Save' }).click();
   }
 
   // --- Eliminación de registros ---

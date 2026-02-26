@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { OrangeLoginPage } from '../../pages/OrangeLoginPage';
 import { OrangeAdminPage } from '../../pages/OrangeAdminPage';
+import { TIMEOUTS } from '../../utils/constants';
 
-test.describe('Suite de OrangeHRM - Web', () => {
+test.describe('Modulo Login - Web @orange', () => {
   let loginPage: OrangeLoginPage;
 
   test.beforeEach(async ({ page }) => {
@@ -10,41 +11,11 @@ test.describe('Suite de OrangeHRM - Web', () => {
     await loginPage.gotoLogin();
   });
 
-  test('TC01: Login exitoso', async ({ page }) => {
-    await page.waitForTimeout(2000);
-    await loginPage.login(
-      process.env.ORANGE_USER ?? 'Admin',
-      process.env.ORANGE_PASS ?? 'admin123',
-    );
-    await page.waitForTimeout(2000);
-
-    await expect(loginPage.getDashboardTitle()).toContainText('Dashboard');
-    await page.screenshot({ path: 'screenshots/login-exitoso.png' });
-    await page.waitForTimeout(2000);
-  });
-
-  test('TC02: Navegación por teclado (Accesibilidad)', async ({ page }) => {
-    await loginPage.loginWithKeyboard(
-      process.env.ORANGE_USER ?? 'Admin',
-      process.env.ORANGE_PASS ?? 'admin123',
-    );
-    await page.waitForTimeout(2000);
-
-    await expect(page).toHaveURL(/.*dashboard/);
-    await page.waitForTimeout(2000);
-  });
-
-  test('TC03: Recuperación de contraseña', async ({ page }) => {
-    await loginPage.resetPasswordFor(process.env.ORANGE_USER ?? 'Admin');
-    // Aquí se podrían agregar asserts adicionales sobre el mensaje de éxito.
-    await page.waitForTimeout(2000);
-  });
-
-  // Data-Driven Testing para Casos Negativos (TC04, TC05, TC06)
+    // Data-Driven Testing para Casos Negativos (TC04, TC05, TC06)
   const escenariosInvalidos = [
-    { usuario: 'UsuarioInexistente', clave: 'admin123', desc: 'UsuarioInexistente TC04' },
-    { usuario: 'Admin', clave: 'ClaveMal', desc: 'Clave error Password TC05' },
-    { usuario: 'admin', clave: 'ADMIN123', desc: 'Case Sensitive TC06' },
+    { usuario: 'UsuarioInexistente', clave: 'admin123', desc: 'UsuarioInexistente TC01' },
+    { usuario: 'Admin', clave: 'ClaveMal', desc: 'Clave error Password TC02' },
+    { usuario: 'admin', clave: 'ADMIN123', desc: 'Case Sensitive TC03' },
   ];
 
   for (const escenario of escenariosInvalidos) {
@@ -58,9 +29,41 @@ test.describe('Suite de OrangeHRM - Web', () => {
       await page.waitForTimeout(2000);
     });
   }
+
+  test('TC04: Login exitoso', async ({ page }) => {
+    await page.waitForTimeout(2000);
+    await loginPage.login(
+      process.env.ORANGE_USER ?? 'Admin',
+      process.env.ORANGE_PASS ?? 'admin123',
+    );
+    await page.waitForTimeout(2000);
+
+    await expect(loginPage.getDashboardTitle()).toContainText('Dashboard');
+    await page.screenshot({ path: 'screenshots/login-exitoso.png' });
+    await page.waitForTimeout(2000);
+  });
+
+  test('TC05: Navegación por teclado (Accesibilidad)', async ({ page }) => {
+    await loginPage.loginWithKeyboard(
+      process.env.ORANGE_USER ?? 'Admin',
+      process.env.ORANGE_PASS ?? 'admin123',
+    );
+    await page.waitForTimeout(2000);
+
+    await expect(page).toHaveURL(/.*dashboard/);
+    await page.waitForTimeout(2000);
+  });
+
+  test('TC06: Recuperación de contraseña', async ({ page }) => {
+    await loginPage.resetPasswordFor(process.env.ORANGE_USER ?? 'Admin');
+    // Aquí se podrían agregar asserts adicionales sobre el mensaje de éxito.
+    await page.waitForTimeout(2000);
+  });
+
+
 });
 
-test.describe('Módulo Admin - Gestión de Usuarios', () => {
+test.describe('Módulo Admin - Gestión de Usuarios @orange', () => {
   let loginPage: OrangeLoginPage;
   let adminPage: OrangeAdminPage;
 
@@ -148,6 +151,23 @@ test.describe('Módulo Admin - Gestión de Usuarios', () => {
     await page.screenshot({ path: 'screenshots/usuario-eliminado.png', fullPage: true });
     await expect(toastExito).toContainText('Successfully Deleted');
     await page.waitForTimeout(2000);
+  });
+
+  test('TC11: Registrar un usuario nuevo @test', async ({ page }) => {
+    await adminPage.gotoAdmin();
+
+    const username = `nuevo_${Date.now()}`;
+    await adminPage.addNewUser({
+      userRole: 'ESS',
+      employeeName: 'Andres Gomez Morales',
+      username,
+      status: 'Enabled',
+      password: 'NuevoPass123!',
+    });
+
+    const toastExito = adminPage.getToast();
+    await expect(toastExito).toBeVisible({ timeout: TIMEOUTS.LONG });
+    await expect(toastExito).toContainText('Successfully Saved');
   });
 });
 

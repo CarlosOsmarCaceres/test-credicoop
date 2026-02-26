@@ -73,3 +73,7 @@ Este README está pensado para entrevistas y handover rápido del proyecto de QA
 ### Atajos de teclado
 
 ctrl + f: Para bus car en inpector por xpath, id
+
+npx playwright test --headed
+npx playwright test --grep @or
+npx playwright show-report
