@@ -46,5 +46,38 @@ test.describe('Módulo Admin - Gestión de Usuarios @orange @admin', () => {
     await expect(toastExito).toContainText('Successfully Updated');
 
   });
+  test('TC02: Filtrar usuarios por estado Disabled @test', async ({ page }) => {
+    // 1. Navegar al menú lateral "Admin"
+    await page.getByRole('link', { name: 'Admin' }).click();
+
+    // 2. Localizar el dropdown de "Status" en la sección de filtros (arriba)
+    // Usamos el mismo selector robusto que en el test anterior
+    const filterStatusDropdown = page.locator('div.oxd-input-group', { hasText: 'Status' }).locator('.oxd-select-text');
+    await filterStatusDropdown.click();
+    await page.waitForTimeout(2000);
+
+    // 3. Seleccionar la opción "Disabled"
+    await page.getByRole('option', { name: 'Disabled' }).click();
+    await page.waitForTimeout(2000);
+
+    // 4. Hacer clic en el botón "Search"
+    await page.getByRole('button', { name: 'Search' }).click();
+
+    // 5. Esperar a que la tabla se actualice (un pequeño delay o esperar al spinner)
+    await page.waitForTimeout(2000); 
+
+    // 6. Validación: Verificar que el primer resultado de la tabla sea "Disabled"
+    // Buscamos dentro de la tabla la celda que corresponde al status (suele ser la 4ta o 5ta columna)
+    const primerResultadoStatus = page.locator('.oxd-table-card').first().locator('.oxd-table-cell').nth(4);
+    
+    await expect(primerResultadoStatus).toContainText('Disabled');
+
+    // 7. Opcional: Contar si hay resultados
+    const registrosCount = await page.locator('.oxd-table-card').count();
+    console.log(`Se encontraron ${registrosCount} usuarios con estado Disabled.`);
+
+    await page.waitForTimeout(2000);
+    expect(registrosCount).toBeGreaterThan(0);
+  });
 
 });

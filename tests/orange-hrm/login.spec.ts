@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Módulo de Autenticación - OrangeHRM @orange', () => {
+test.describe('Módulo de Autenticación - OrangeHRM @orange @login', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/web/index.php/auth/login');
