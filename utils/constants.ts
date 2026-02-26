@@ -9,6 +9,7 @@
 
 /** URL base del home banking (Banco Credicoop). Usar con page.goto() o como base para rutas. */
 export const BASE_URL = 'https://bancainternet.bancocredicoop.coop/bcclbe/';
+export const BASE_URL_ML = 'https://www.mercadolibre.com.ar/';
 
 /** Tipos de documento de identidad aceptados en el sistema. Útil para selects y validaciones. */
 export const TIPOS_DOCUMENTO = ['DNI', 'LE', 'LC', 'CI', 'Pasaporte'] as const;
