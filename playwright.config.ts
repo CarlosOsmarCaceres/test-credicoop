@@ -13,15 +13,20 @@ export default defineConfig({
   ],
   use: {
     headless: false,
-    baseURL: 'https://bancainternet.bancocredicoop.coop/bcclbe/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    }
+      name: 'MercadoLibre',
+      testDir: './tests/mercado-libre',
+      use: { ...devices['Desktop Chrome'], baseURL: 'https://www.mercadolibre.com.ar/' },
+    },
+    {
+      name: 'OrangeHRM',
+      testDir: './tests/orange-hrm',
+      use: { ...devices['Desktop Chrome'], baseURL: 'https://opensource-demo.orangehrmlive.com/' },
+    },
   ],
 });

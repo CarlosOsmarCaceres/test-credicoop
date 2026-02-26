@@ -1,5 +1,5 @@
 {
-  "name": "test-credicoop",
+  "name": "test-web",
   "version": "1.0.0",
   "description": "QA Automation project with Playwright",
   "main": "index.js",

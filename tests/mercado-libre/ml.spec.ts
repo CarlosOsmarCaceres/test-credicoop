@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { BASE_URL_ML } from '../utils/constants';
+import { BASE_URL_ML } from '../../utils/constants';
 
 test.describe('Suite de Mercado Libre - Web Desktop', () => {
 

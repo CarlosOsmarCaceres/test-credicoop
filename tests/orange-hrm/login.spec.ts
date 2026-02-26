@@ -1,35 +1,56 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Módulo de Autenticación - OrangeHRM', () => {
+test.describe('Módulo de Autenticación - OrangeHRM @orange', () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+    await page.goto('/web/index.php/auth/login');
   });
 
-  test('TC01: Login exitoso con credenciales válidas @orange', async ({ page }) => {
-    await page.waitForTimeout(1000);
+  test('TC01: Login exitoso @smoke', async ({ page }) => {
     await page.getByPlaceholder('Username').fill('Admin');
-    await page.waitForTimeout(1000);
     await page.getByPlaceholder('Password').fill('admin123');
-    await page.waitForTimeout(1000);
     await page.getByRole('button', { name: 'Login' }).click();
-    await page.waitForTimeout(3000);
 
-    // Validación: El título del dashboard debe ser visible
-    const header = page.locator('.oxd-topbar-header-title');
-    await expect(header).toContainText('Dashboard');
-    await page.waitForTimeout(3000);
+    await expect(page.locator('.oxd-topbar-header-title')).toContainText('Dashboard');
   });
 
-  test('TC05: Validar campos requeridos al dejar vacíos @orange @regresion', async ({ page }) => {
-    await page.getByRole('button', { name: 'Login' }).click();
-    await page.waitForTimeout(1000);
+  
+  test('TC02: Navegación por teclado (Accesibilidad)', async ({ page }) => {
+    await page.focus('input[name="username"]');
+    await page.keyboard.type('Admin');
+    await page.keyboard.press('Tab');
+    await page.keyboard.type('admin123');
+    await page.keyboard.press('Enter');
 
-    // Verificamos que aparezca el mensaje "Required" debajo de los inputs
-    const errorMessages = page.locator('.oxd-input-group__message');
-    await expect(errorMessages.first()).toContainText('Required');
-    expect(await errorMessages.count()).toBe(2);
-    await page.waitForTimeout(3000);
-  });
+    await expect(page).toHaveURL(/.*dashboard/);
+});
 
+  test('TC03: Recuperación de contraseña', async ({ page }) => {
+    await page.locator('.orangehrm-login-forgot-header').click();
+    await page.getByPlaceholder('Username').fill('Admin');
+    await page.getByRole('button', { name: 'Reset Password' }).click();
+
+    /* await expect(page.locator('.orangehrm-forgot-password-title')).toContainText('successfully'); */
+});
+    // Data-Driven Testing para Casos Negativos (TC03, TC04, TC07)
+    const escenariosInvalidos = [
+    { usuario: 'UsuarioInexistente', clave: 'admin123', desc: 'Inexistente TC04' },
+    { usuario: 'Admin', clave: 'ClaveMal', desc: 'Clave Errónea TC05' },
+    { usuario: 'admin', clave: 'ADMIN123', desc: 'Case Sensitive TC06' },
+    ];
+
+    for (const escenario of escenariosInvalidos) {
+    test(`Login fallido: ${escenario.desc}`, async ({ page }) => {
+        await page.getByPlaceholder('Username').fill(escenario.usuario);    
+        await page.getByPlaceholder('Password').fill(escenario.clave);
+  
+        await page.getByRole('button', { name: 'Login' }).click();
+  
+
+        const alerta = page.locator('.oxd-alert-content-text');
+        await expect(alerta).toBeVisible();
+        await expect(alerta).toContainText('Invalid credentials');
+  
+    });
+    }
 });

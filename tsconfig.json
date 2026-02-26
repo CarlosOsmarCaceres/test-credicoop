@@ -14,6 +14,6 @@
       "@utils/*": ["utils/*"]
     }
   },
-  "include": ["**/*.ts", "tests/login.spec.tst"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
