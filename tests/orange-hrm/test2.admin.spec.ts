@@ -30,6 +30,8 @@ test.describe('Módulo Admin - Gestión de Usuarios @orange @admin', () => {
     // En OrangeHRM los dropdowns son divs. Buscamos el que está debajo de la etiqueta Status.
     const dropdownStatus = page.locator('div.oxd-input-group', { hasText: 'Status' }).locator('.oxd-select-text');
     await dropdownStatus.click();
+    await page.screenshot({ path: 'screenshots/cambio-estado-previo.png' });
+    
     await page.waitForTimeout(3000);
 
     // 5. Seleccionar la opción "Disabled"
@@ -161,6 +163,8 @@ test.describe('Módulo Admin - Gestión de Usuarios @orange @admin', () => {
     // 6. Validación: Verificar el mensaje Toast de éxito
     const toastExito = page.locator('.oxd-toast-content');
     await expect(toastExito).toBeVisible();
+    // HACER SCREENSHOT DEL MENSAJE VERDE DE ÉXITO
+    await page.screenshot({ path: 'screenshots/usuario-eliminado.png', fullPage: true });
     await expect(toastExito).toContainText('Successfully Deleted');
     await page.waitForTimeout(3000);
 

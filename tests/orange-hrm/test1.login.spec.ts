@@ -12,6 +12,7 @@ test.describe('Módulo de Autenticación - OrangeHRM @orange @login', () => {
     await page.getByRole('button', { name: 'Login' }).click();
 
     await expect(page.locator('.oxd-topbar-header-title')).toContainText('Dashboard');
+    await page.screenshot({ path: 'screenshots/login-exitoso.png' });
   });
 
   
